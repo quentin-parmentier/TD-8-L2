@@ -95,6 +95,10 @@
         }
     }
     
+    //Si vous utilisez Content-Type: application/json, vous pouvez récupérer les données comme ça :
+    //$json = json_decode(file_get_contents('php://input'), true);
+    //var_dump($json['id']);
+    //die;
     $conn = connect();
     switch ($_SERVER['REQUEST_METHOD']) {
         case 'GET':
@@ -106,7 +110,7 @@
             break;
         
         case "POST": 
-            $_POST = json_decode(file_get_contents("php://input"), true);
+            $_POST = json_decode(file_get_contents("php://input"), true); //true permet de faire en sorte d'avoir un tableau au lieu d'un objet !
             ///On regarde si on a une action
             if($_POST["action"] == "delete") {
                 if(isset($_POST["id"])) {

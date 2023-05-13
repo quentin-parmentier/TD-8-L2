@@ -1,15 +1,20 @@
+//On ajoute un listener quand le DOM est chargé (avant le css et les images !)
 document.addEventListener("DOMContentLoaded", function () {
 	document
-		.querySelector(".ajaxform")
+		.querySelector(".ajaxform") //Selecteur comme en css
 		.addEventListener("submit", async function (event) {
+			//listener sur l'évenement d'envoi de formulaire
 			//Enlève le comportement par défaut
 			event.preventDefault()
 			//On choisi comment on veut envoyer
 			let formData = new FormData(event.target)
 			console.log(formData)
-			let entries = Object.fromEntries(formData)
-			console.log(entries)
+			let entries = Object.fromEntries(formData) //On récupère toutes les entrées
+			console.log(entries) //[{id:123, productDisplayName:"Mon vetement cool", ...}]
 			data = {}
+			//On a vue que ça servait pas
+			//Mais ça parcours toutes les clées d'un objet
+			//in = clé / of = valeurs
 			for (entry in entries) {
 				console.log(entry)
 				data[entry] = entries[entry]
@@ -65,6 +70,7 @@ function updateData(data) {
 	}
 }
 
+//Custom function to remove all children of a HTMLElement
 function removeAllChildNodes(parent) {
 	while (parent.firstChild) {
 		console.log(parent.firstChild)
@@ -75,8 +81,10 @@ function removeAllChildNodes(parent) {
 ///Prend en parametre un vetement
 ///Retourne une etiquette (donc du html)
 function buildEtiquette(vetement) {
+	//Si - sinon => ternaire : condition ? true : false
 	let sexIcon =
 		vetement["gender"] == "Men" ? "bi-gender-male" : "bi-gender-female"
+	//En JS on peut faire une string sur plusieurs lignes grace à `` et mettre des variables dedans avec ${maVariable}
 	return `
     <div class="card text-bg-light" id="${vetement["id"]}">
         <img src="img/vetements/${vetement["id"]}.jpg" alt="Card img cap" class="card-img-top">
@@ -114,6 +122,7 @@ function buildUrl(filterBy, filterValue) {
 }
 
 function buildBaseUrl() {
+	//A changer en fonction de votre dossier !
 	return `http://localhost/L2/TD8/api.php`
 }
 
@@ -141,9 +150,12 @@ async function deleteVetement(id) {
 }
 
 async function createVetement(data = {}) {
+	//On voit que dans les deux cas, on a exactement le même code !
+	//@todo: On pourrait créer une fonction post global et passer une action dans la fonction ;)
 	let headers = new Headers()
-	headers.append("Content-Type", "application/x-www-form-urlencoded")
-	headers.append("charset", "UTF-8")
+	headers.append("Content-Type", "application/x-www-form-urlencoded") //Ce que le server attend (@todo application/json est possible, mais faut modifier le server)
+	headers.append("Accept", "application/json") //Ce que moi j'attends (le client)
+	headers.append("charset", "UTF-8") //Comment j'encode le texte que j'envoie
 
 	data["action"] = "add"
 
@@ -155,7 +167,19 @@ async function createVetement(data = {}) {
 
 	const req = await fetch(buildBaseUrl(), config)
 
-	const result = await req.json() // [vetements] ou {result: false}
-	console.log(result)
-	return result
+	//Si on a une 200
+	if (req.ok) {
+		const result = await req.json() // [vetements] ou {result: false}
+		console.log(result)
+		if (result["result"] == false) {
+			alert("Une erreur gérée s'est produite")
+		} else {
+			return result
+		}
+	} else {
+		//Si on a pas une 200
+		alert("Une erreur non gérée s'est produite :(")
+
+		//Dans la vraie vie, on doit gérer les erreurs et renvoyer une 4xx/5xx quand même ! Avec un message d'erreur dans le retour
+	}
 }
