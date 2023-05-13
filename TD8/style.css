@@ -1,0 +1,13 @@
+.navbar-nav {
+    flex-direction: row;
+}
+
+#bandeau {
+    margin-top: 80px;
+}
+
+.card {
+    width: 300px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
